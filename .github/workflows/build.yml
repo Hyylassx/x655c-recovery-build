@@ -13,6 +13,8 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/hostedtoolcache
+          sudo docker image prune --all --force
           sudo apt clean
 
       - name: Install dependencies
@@ -43,7 +45,7 @@ jobs:
       - name: Sync source
         run: |
           cd twrp
-          repo sync -j4 --force-sync
+          repo sync -c --no-clone-bundle --no-tags -j2 --force-sync
 
       - name: Clone device tree
         run: |
