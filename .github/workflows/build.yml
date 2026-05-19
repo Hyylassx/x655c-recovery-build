@@ -11,8 +11,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build Recovery
-        uses: mohancm/android-recovery-action@main
+      - name: android-recovery-action
+        uses: XenonTheInertG/android-recovery-action@v2.1.2
         with:
           MANIFEST_BRANCH: twrp-11
           DEVICE_TREE: https://github.com/Hyylassx/Tree_infinix_X655C
