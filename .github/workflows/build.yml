@@ -47,7 +47,7 @@ jobs:
         run: |
           cd twrp
           mkdir -p device/infinix
-          git clone https://github.com/USERNAME/twrp_infinix_X655C device/infinix/X655C
+          git clone https://github.com/Hyylassx/Tree_infinix_X655C device/infinix/X655C
 
       - name: Build recovery
         run: |
