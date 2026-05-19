@@ -11,15 +11,16 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Build Recovery
-      uses: mohancm/android-recovery-action@main
+    - name: android-recovery-action
+      uses: XenonTheInertG/android-recovery-action@v2.1.2
       with:
         MANIFEST_BRANCH: twrp-11
-        DEVICE_TREE: https://github.com/USERNAME/twrp_x655c
+        DEVICE_TREE: https://github.com/Hyylassx/Tree_infinix_X655C
         DEVICE_TREE_BRANCH: main
         DEVICE_PATH: device/infinix/X655C
         BUILD_TARGET: recoveryimage
         LUNCH_TARGET: omni_X655C-eng
+        SYNC_DEPTH: 1
 
     - name: Upload Recovery
       uses: actions/upload-artifact@v4
