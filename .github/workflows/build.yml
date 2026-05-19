@@ -1,0 +1,29 @@
+name: Build TWRP
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Build Recovery
+      uses: mohancm/android-recovery-action@main
+      with:
+        MANIFEST_BRANCH: twrp-11
+        DEVICE_TREE: https://github.com/USERNAME/twrp_x655c
+        DEVICE_TREE_BRANCH: main
+        DEVICE_PATH: device/infinix/X655C
+        BUILD_TARGET: recoveryimage
+        LUNCH_TARGET: omni_X655C-eng
+
+    - name: Upload Recovery
+      uses: actions/upload-artifact@v4
+      with:
+        name: recovery
+        path: |
+          out/target/product/X655C/*.img
