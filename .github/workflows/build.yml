@@ -15,7 +15,7 @@ jobs:
         uses: mohancm/android-recovery-action@main
         with:
           MANIFEST_BRANCH: twrp-11
-          DEVICE_TREE: https://github.com/USERNAME/twrp_x655c
+          DEVICE_TREE: https://github.com/Hyylassx/Tree_infinix_X655C
           DEVICE_TREE_BRANCH: main
           DEVICE_PATH: device/infinix/X655C
           LUNCH_TARGET: omni_X655C-eng
@@ -27,3 +27,4 @@ jobs:
         with:
           name: recovery
           path: out/target/product/X655C/*.img
+          UPLOAD_TO_RELEASE: true
