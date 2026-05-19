@@ -11,20 +11,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: android-recovery-action
-        uses: XenonTheInertG/android-recovery-action@v2.1.2
-        with:
-          MANIFEST_BRANCH: twrp-11
-          DEVICE_TREE: https://github.com/Hyylassx/Tree_infinix_X655C
-          DEVICE_TREE_BRANCH: main
-          DEVICE_PATH: device/infinix/X655C
-          LUNCH_TARGET: omni_X655C-eng
-          BUILD_TARGET: recoveryimage
-          SYNC_DEPTH: 1
+      - name: Android Recovery Action
+        uses: XenonTheInertG/android-recovery-action@main
+        env:
+          MANIFEST: "https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp -b twrp-11"
+          DT_LINK: "https://github.com/Hyylassx/Tree_infinix_X655C"
+          VENDOR: "infinix"
+          CODENAME: "X655C"
+          TARGET: "recoveryimage"
+          FLAVOR: "eng"
+          TZ: "Asia/Jakarta"
 
       - name: Upload Recovery
         uses: actions/upload-artifact@v4
         with:
           name: recovery
-          path: out/target/product/X655C/*.img
-          UPLOAD_TO_RELEASE: true
+          path: |
+            out/target/product/X655C/*.img
