@@ -3,13 +3,6 @@ name: Build TWRP
 on:
   workflow_dispatch:
 
-# Required to allow GitHub Actions to create a Release tag and upload files
-permissions:
-  contents: write
-
-env:
-  TEMPORARY_DISABLE_PATH_RESTRICTIONS: "true" # Bypasses the nsjail error
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -39,7 +32,7 @@ jobs:
       - name: Setup repo
         run: |
           mkdir -p ~/bin
-          curl https://googleapis.com > ~/bin/repo
+          curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
           chmod a+x ~/bin/repo
           echo "$HOME/bin" >> $GITHUB_PATH
 
@@ -47,7 +40,7 @@ jobs:
         run: |
           mkdir twrp
           cd twrp
-          repo init -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp -b twrp-11
+          repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp -b twrp-11
 
       - name: Sync source
         run: |
@@ -57,49 +50,25 @@ jobs:
       - name: Clone device tree
         run: |
           cd twrp
-          # Clone into a lowercase directory path to match omni_X655C.mk requirements
           mkdir -p device/infinix
-          git clone https://github.com/Hyylassx/twrp_infinix_X655C -b android-10.0 device/infinix/X655C
+          git clone https://github.com/Hyylassx/Tree_infinix_X655C device/infinix/X655C
 
-      - name: Patch Tree Capitalization (Critical Fix)
-        run: |
-          cd twrp/device/infinix/X655C
-          # Dynamically fix any internal configuration files pointing to capitalized Infinix
-          sed -i 's/device\/Infinix\//device\/infinix\//g' AndroidProducts.mk || true
-          sed -i 's/device\/Infinix\//device\/infinix\//g' omni_X655C.mk || true
-          sed -i 's/Infinix/infinix/g' AndroidProducts.mk || true
-
-      - name: Debug tree structure
+      - name: Debug tree
         run: |
           cd twrp/device/infinix/X655C
           pwd
-          find . | head -20
+          find . | head -50
       
       - name: Build recovery
         run: |
           cd twrp
           source build/envsetup.sh
-          # Matches your preferred configuration file name precisely
           lunch omni_X655C-eng
-          mka recoveryimage -j2
+          mka recoveryimage
 
-      - name: Create Release Package
-        run: |
-          echo "RELEASE_TAG=TWRP-X655C-$(date +'%Y%m%d%H%M')" >> $GITHUB_ENV
-
-      - name: Upload to GitHub Releases
-        uses: softprops/action-gh-release@v2
+      - name: Upload recovery
+        uses: actions/upload-artifact@v4
         with:
-          tag_name: ${{ env.RELEASE_TAG }}
-          name: TWRP Recovery for Infinix X655C
-          body: |
-            Automated TWRP Compilation Build.
-            Target: Infinix Hot 9 (X655C)
-            Platform: MediaTek MT6765
-            Branch: Android 11 Minimal Manifest Base
-          draft: false
-          prerelease: false
-          files: |
-            twrp/out/target/product/X655C/recovery.img
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: recovery
+          path: |
+            twrp/out/target/product/X655C/*.img
