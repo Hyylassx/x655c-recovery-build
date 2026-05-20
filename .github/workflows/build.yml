@@ -7,6 +7,9 @@ on:
 permissions:
   contents: write
 
+env:
+  TEMPORARY_DISABLE_PATH_RESTRICTIONS: "true" # Fixes the nsjail error globally
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -44,7 +47,6 @@ jobs:
         run: |
           mkdir twrp
           cd twrp
-          # Note: I kept your branch hook 'twrp-11' as specified in your script
           repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp -b twrp-11
 
       - name: Sync source
@@ -55,12 +57,12 @@ jobs:
       - name: Clone device tree
         run: |
           cd twrp
-          mkdir -p device/infinix
-          git clone https://github.com/Hyylassx/Tree_infinix_X655C device/infinix/X655C
+          # Explicitly target the android-10.0 branch where your code lives
+          git clone https://github.com/Hyylassx/Tree_infinix_X655C -b android-10.0 device/Infinix/X655C
 
       - name: Debug tree
         run: |
-          cd twrp/device/infinix/X655C
+          cd twrp/device/Infinix/X655C
           pwd
           find . | head -50
       
@@ -68,13 +70,12 @@ jobs:
         run: |
           cd twrp
           source build/envsetup.sh
-          lunch omni_X655C-eng
-          mka recoveryimage
+          # Matches the config file naming inside your repo (omni_Infinix_X655C)
+          lunch omni_Infinix_X655C-eng
+          mka recoveryimage -j2
 
       - name: Create Release Package
         run: |
-          cd twrp/out/target/product/X655C/
-          # Create a custom variable for a unique date tag
           echo "RELEASE_TAG=TWRP-X655C-$(date +'%Y%m%d%H%M')" >> $GITHUB_ENV
 
       - name: Upload to GitHub Releases
