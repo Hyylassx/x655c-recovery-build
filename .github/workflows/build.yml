@@ -3,6 +3,10 @@ name: Build TWRP
 on:
   workflow_dispatch:
 
+# Required to allow GitHub Actions to create a Release tag and upload files
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -40,6 +44,7 @@ jobs:
         run: |
           mkdir twrp
           cd twrp
+          # Note: I kept your branch hook 'twrp-11' as specified in your script
           repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp -b twrp-11
 
       - name: Sync source
@@ -66,9 +71,25 @@ jobs:
           lunch omni_X655C-eng
           mka recoveryimage
 
-      - name: Upload recovery
-        uses: actions/upload-artifact@v4
+      - name: Create Release Package
+        run: |
+          cd twrp/out/target/product/X655C/
+          # Create a custom variable for a unique date tag
+          echo "RELEASE_TAG=TWRP-X655C-$(date +'%Y%m%d%H%M')" >> $GITHUB_ENV
+
+      - name: Upload to GitHub Releases
+        uses: softprops/action-gh-release@v2
         with:
-          name: recovery
-          path: |
-            twrp/out/target/product/X655C/*.img
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: TWRP Recovery for Infinix X655C
+          body: |
+            Automated TWRP Compilation Build.
+            Target: Infinix Hot 9 (X655C)
+            Platform: MediaTek MT6765
+            Branch: Android 11 Minimal Manifest Base
+          draft: false
+          prerelease: false
+          files: |
+            twrp/out/target/product/X655C/recovery.img
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
