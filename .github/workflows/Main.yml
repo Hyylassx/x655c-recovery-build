@@ -83,9 +83,8 @@ jobs:
           mkdir -p device/infinix
 
           git clone --depth=1 \
-            -b android-10.0 \
-            https://github.com/Hyylassx/Tree_infinix_X655C \
-            device/infinix/X655C
+            -b android-10 \
+            https://github.com/kies83/x655c_h6211abkg-q-op
 
       - name: Show Free Space
         run: |
