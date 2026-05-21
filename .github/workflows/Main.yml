@@ -25,7 +25,6 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt update
-
           sudo apt install -y \
             git-core gnupg flex bison gperf build-essential \
             zip curl zlib1g-dev gcc-multilib g++-multilib \
@@ -49,18 +48,14 @@ jobs:
       - name: Setup Repo Tool
         run: |
           mkdir -p ~/bin
-
           curl -L https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
-
           chmod a+x ~/bin/repo
-
           echo "$HOME/bin" >> $GITHUB_PATH
 
       - name: Init TWRP Source
         run: |
           mkdir twrp
           cd twrp
-
           repo init --depth=1 \
             -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp \
             -b twrp-11
@@ -68,7 +63,6 @@ jobs:
       - name: Sync Sources
         run: |
           cd twrp
-
           repo sync \
             -c \
             --no-clone-bundle \
@@ -79,47 +73,31 @@ jobs:
       - name: Clone Device Tree
         run: |
           cd twrp
-
           mkdir -p device/infinix
-
+          # Added explicit target path at the end to clone right into device/infinix/X655C
           git clone --depth=1 \
             -b android-10 \
-            https://github.com/kies83/x655c_h6211abkg-q-op
+            https://github.com/kies83/x655c_h6211abkg-q-op \
+            device/infinix/X655C
 
       - name: Show Free Space
         run: |
           df -h
 
-      - name: Setup Build Environment
+      - name: Execute Compilation
         run: |
           cd twrp
-
           export ALLOW_MISSING_DEPENDENCIES=true
           export LC_ALL=C
-
           source build/envsetup.sh
-
-          lunch omni_X655C-eng
-
-      - name: Build Recovery
-        run: |
-          cd twrp
-
-          export ALLOW_MISSING_DEPENDENCIES=true
-          export LC_ALL=C
-
-          source build/envsetup.sh
-
-          lunch omni_X655C-eng
-
+          # Updated target config to twrp_X655C-eng to match your tree's naming
+          lunch twrp_X655C-eng
           mka recoveryimage -j$(nproc --all)
 
       - name: Verify Output
         run: |
           cd twrp/out/target/product/X655C
-
           echo "===== Generated Images ====="
-
           ls -lh *.img || true
 
       - name: Upload Recovery IMG
