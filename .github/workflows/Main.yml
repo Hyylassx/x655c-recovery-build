@@ -91,7 +91,7 @@ jobs:
           export LC_ALL=C
           source build/envsetup.sh
           # Updated target config to twrp_X655C-eng to match your tree's naming
-          lunch twrp_X655C-eng
+          lunch omni_X655C-eng
           mka recoveryimage -j$(nproc --all)
 
       - name: Verify Output
