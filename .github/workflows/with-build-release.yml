@@ -121,20 +121,20 @@ jobs:
       - name: Prepare Release Files
         run: |
           cd twrp/out/target/product/X655C
-
           BUILD_DATE=$(date +"%Y%m%d-%H%M")
-
           mkdir -p release
+           # Main recovery image
+           cp recovery.img \
+           release/TWRP-X655C-${BUILD_DATE}.img
+         
+          # Optional extra images
+          [ -f boot.img ] && cp boot.img release/
+          [ -f dtbo.img ] && cp dtbo.img release/
+          [ -f vbmeta.img ] && cp vbmeta.img release/
 
-          cp recovery.img \
-            release/TWRP-X655C-${BUILD_DATE}.img
-
-          cp *.img release/ || true
-
-          cd release
-
+           cd release
           zip -r TWRP-X655C-${BUILD_DATE}.zip ./*
-
+          
       - name: Verify Output
         run: |
           cd twrp/out/target/product/X655C/release
