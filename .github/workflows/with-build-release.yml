@@ -123,16 +123,17 @@ jobs:
           cd twrp/out/target/product/X655C
           BUILD_DATE=$(date +"%Y%m%d-%H%M")
           mkdir -p release
-           # Main recovery image
-           cp recovery.img \
-           release/TWRP-X655C-${BUILD_DATE}.img
-         
+          
+          # Main recovery image
+          cp recovery.img release/TWRP-X655C-${BUILD_DATE}.img
+          
           # Optional extra images
           [ -f boot.img ] && cp boot.img release/
           [ -f dtbo.img ] && cp dtbo.img release/
           [ -f vbmeta.img ] && cp vbmeta.img release/
 
-           cd release
+          # Zip compression safely handled inside directory target
+          cd release
           zip -r TWRP-X655C-${BUILD_DATE}.zip ./*
           
       - name: Verify Output
@@ -140,22 +141,19 @@ jobs:
           cd twrp/out/target/product/X655C/release
 
           echo "===== RELEASE FILES ====="
-
           ls -lh
 
       - name: Upload Recovery IMG
         uses: actions/upload-artifact@v4
         with:
           name: recovery-img
-          path: |
-            twrp/out/target/product/X655C/release/*.img
+          path: twrp/out/target/product/X655C/release/*.img
 
       - name: Upload Recovery ZIP
         uses: actions/upload-artifact@v4
         with:
           name: recovery-zip
-          path: |
-            twrp/out/target/product/X655C/release/*.zip
+          path: twrp/out/target/product/X655C/release/*.zip
 
       - name: Upload Build Logs
         if: always()
@@ -163,7 +161,9 @@ jobs:
         with:
           name: build-logs
           path: |
-            twrp/out/**/*.log
+            twrp/out/*.log
+            twrp/out/*.txt
+          if-no-files-found: ignore
 
       - name: Generate Release Tag
         id: tag
